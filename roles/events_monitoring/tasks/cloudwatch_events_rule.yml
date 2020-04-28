@@ -1,0 +1,27 @@
+---
+- name: Create CloudWatch Events rule
+  cloudwatchevent_rule:
+    state: present
+    name: "{{ item.cw_rule_name }}"
+    description: "{{ item.cw_rule_description }}"
+    event_pattern: "{{ lookup('file', '{{ monitoring_tasks_files_path }}/{{ item.name }}.event_pattern.json') | from_json | to_json }}"
+    targets:
+      - id: "{{ item.cw_rule_name }}-{{ item.name }}"
+        arn: "arn:aws:lambda:{{ aws_region }}:{{ aws_account }}:function:{{ item.name }}"
+  loop: "{{ monitoring_tasks }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.cw_rule_name is defined
+
+- name: Create resource-based policy for lambda for Cloudwatch Events
+  lambda_policy:
+    state: present
+    function_name: "{{ item.name }}"
+    statement_id: "{{ item.name }}_policy"
+    action: lambda:InvokeFunction
+    principal: events.amazonaws.com
+    source_arn: "arn:aws:events:{{ aws_region }}:{{ aws_account }}:rule/{{ item.cw_rule_name }}"
+  loop: "{{ monitoring_tasks }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.cw_rule_name is defined

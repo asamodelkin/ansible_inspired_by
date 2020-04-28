@@ -1,0 +1,19 @@
+{
+    "source": [
+        "aws.states"
+    ],
+    "detail-type": [
+        "Step Functions Execution Status Change"
+    ],
+    "detail": {
+        "status": [
+            "ABORTED",
+            "FAILED",
+            "TIMED_OUT"
+        ],
+        "stateMachineArn": [
+            "arn:aws:states:us-east-2:100000000000:stateMachine:ECSTaskNotificationStateMachine-EyuQCVCXfFQK",
+            "arn:aws:states:us-east-2:100000000000:stateMachine:SNS-Test"
+        ]
+    }
+}

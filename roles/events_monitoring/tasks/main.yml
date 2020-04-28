@@ -1,0 +1,12 @@
+---
+- include: iam_role.yml
+  tags:
+    - iam
+
+- include: lambda.yml
+  tags:
+    - lambda
+
+- include: cloudwatch_events_rule.yml
+  tags:
+    - cloudwatch_events_rule

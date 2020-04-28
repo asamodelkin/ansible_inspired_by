@@ -1,0 +1,18 @@
+monitoring_tasks_files_path: "files/events_monitoring"
+monitoring_tasks:
+  - name: aw_monitor_step_functions
+    environment:
+      SNS_TOPIC: "arn:aws:sns:us-east-2:999999999999:notifications"
+    tags:
+      contact: "aleksandr_samodelkin@epam.com"
+    cw_rule_name: AWMonitorStepFunctions
+    cw_rule_description: Check ABORTED, FAILED and TIMED_OUT status and send notification
+
+  - name: aw_monitor_ecs_tasks
+    environment:
+      SNS_TOPIC: "arn:aws:sns:us-east-2:999999999999:notifications"
+    tags:
+      contact: "aleksandr_samodelkin@epam.com"
+    cw_rule_name: AWMonitorECSTasks
+    cw_rule_description: Check container(s) exit code and task stop status
+

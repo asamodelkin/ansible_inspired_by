@@ -1,0 +1,23 @@
+---
+- name: Create/update ZIP file of lambda (only in case of changes)
+  shell: "cd {{ monitoring_tasks_files_path }} && zip -u {{ item.name }}.py.zip {{ item.name }}.py"
+  register: zip_cmd
+  failed_when: zip_cmd.rc != 0 and zip_cmd.rc != 12
+  changed_when: zip_cmd.rc == 0
+  loop: "{{ monitoring_tasks }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create lambda in AWS
+  lambda:
+    name: "{{ item.name }}"
+    zip_file: "{{ monitoring_tasks_files_path }}/{{ item.name }}.py.zip"
+    role: "arn:aws:iam::{{ aws_account }}:role/{{ item.name }}"
+    handler: "{{ item.name }}.lambda_handler"
+    environment_variables: "{{ item.environment }}"
+    tags: "{{ item.tags }}"
+    runtime: "python3.8"
+    state: present
+  loop: "{{ monitoring_tasks }}"
+  loop_control:
+    label: "{{ item.name }}"

@@ -1,0 +1,19 @@
+---
+- name: Create IAM policy for lambda
+  iam_managed_policy:
+    policy_name: "{{ item.name }}"
+    policy: "{{ lookup('file', '{{ monitoring_tasks_files_path }}/{{ item.name }}.iam_policy.json') }}"
+    state: present
+  loop: "{{ monitoring_tasks }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create IAM role for lambda
+  iam_role:
+    name: "{{ item.name }}"
+    assume_role_policy_document: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+    description: "Role for lamdba function {{ item.name }}"
+    managed_policy: "arn:aws:iam::{{ aws_account }}:policy/{{ item.name }}"
+  loop: "{{ monitoring_tasks }}"
+  loop_control:
+    label: "{{ item.name }}"
